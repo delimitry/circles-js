@@ -1,0 +1,111 @@
+<html>
+<head>
+<title>Circles</title>
+</head>
+<!--
+======================================================================
+JavaScript Circles
+Author: delimitry
+======================================================================
+-->
+<body onload="checkCanvasIsSupported();" oncontextmenu="return false" style="background: #000">
+<script type="text/javascript" src="js/circles.js"></script>
+<canvas id="game_canvas" style="border: solid 1px #222;"></canvas><br/>
+<a style="color:white; font-family: arial; font-size: 12;">[Space] - Pause</a><br/>
+<a style="color:white; font-family: arial; font-size: 12;">[Up/Down] - Inc/Dec speed</a><br/>
+<a style="color:white; font-family: arial; font-size: 12;">[Left Mouse Button] - Add circle</a><br/>
+<a style="color:white; font-family: arial; font-size: 12;">[Middle Mouse Button] - Show lines</a><br/>
+<a style="color:white; font-family: arial; font-size: 12;">[Right Mouse Button] - Reset cirlces</a><br/>
+
+<script type="text/javascript">
+
+var LEFT = 37;
+var UP = 38;
+var RIGHT = 39;
+var DOWN = 40;
+var SPACE = 32;
+
+var MOUSE_LEFT_BUTTON = 1;
+var MOUSE_MIDDLE_BUTTON = 2;
+var MOUSE_RIGHT_BUTTON = 3;
+
+var canvas;
+var context;
+var circles;
+
+function checkCanvasIsSupported() {
+	canvas = document.getElementById("game_canvas");
+	canvas.width = 640;
+	canvas.height = 480;	
+	if (canvas.getContext) {
+		context = canvas.getContext('2d');
+		circles = new Circles(canvas, context);
+		circles.init();
+
+		render();
+		setInterval(render, 1000/60);
+	} else {
+		alert("Sorry, but your browser doesn't support a canvas.");
+	}
+}
+
+document.onmousedown = function(event) {
+	event = event || window.event;
+	switch (event.which) {
+		case MOUSE_LEFT_BUTTON:
+			var canvas = document.getElementById('game_canvas');
+			x = event.pageX - canvas.offsetLeft;
+			y = event.pageY - canvas.offsetTop;
+			if ((x > 0 && x < canvas.width) && (y > 0 && y < canvas.height)) {
+				circles.add_circle(x, y);
+			}
+			break;
+		case MOUSE_MIDDLE_BUTTON:
+			circles.toggle_lines();
+			break;
+		case MOUSE_RIGHT_BUTTON:			
+			circles.init();
+			return false;
+		 	break;
+		default: 
+			break; 		
+	}
+}
+
+
+document.onkeydown = function(event) {
+	var keyCode;
+	if (event == null) {
+		keyCode = window.event.keyCode; 
+	} else {
+		keyCode = event.keyCode; 
+	}
+	switch (keyCode) {
+		// case LEFT:
+		// 	break; 
+		case UP:
+			circles.inc_grow_speed();
+		 	break; 
+		// case RIGHT:
+		// 	break; 
+		case DOWN:
+			circles.dec_grow_speed();
+		 	break;
+		case SPACE:
+			circles.toggle_pause();
+			break;
+		default: 
+			break; 
+	} 
+}
+
+function render() {
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	circles.update();
+	circles.draw();
+}
+
+</script>
+
+</body>
+</html>
